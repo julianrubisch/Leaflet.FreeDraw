@@ -330,7 +330,8 @@
                 e.preventDefault();
 
                 var touch = e.touches[0];
-                var layerPoint = L.point(touch.clientX, touch.clientY);
+                var boundingRect = this.getBoundingClientRect();
+                var layerPoint = L.point(touch.clientX-boundingRect.left, touch.clientY-boundingRect.top);
                 var containerPoint = map.layerPointToContainerPoint(layerPoint);
                 var latlng = map.layerPointToLatLng(layerPoint);
                 map.fireEvent('touchstart',
@@ -346,7 +347,8 @@
                 e.preventDefault();
 
                 var touch = e.touches[0];
-                var layerPoint = L.point(touch.clientX, touch.clientY);
+                var boundingRect = this.getBoundingClientRect();
+                var layerPoint = L.point(touch.clientX-boundingRect.left, touch.clientY-boundingRect.top);
                 var containerPoint = map.layerPointToContainerPoint(layerPoint);
                 var latlng = map.layerPointToLatLng(layerPoint);
                 map.fireEvent('touchmove',
