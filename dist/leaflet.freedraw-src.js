@@ -326,6 +326,53 @@
             // Create a new instance of the D3 free-hand tracer.
             this.createD3();
 
+            document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchstart', function(e) {
+                e.preventDefault();
+
+                var touch = e.touches[0];
+                var layerPoint = L.point(touch.clientX, touch.clientY);
+                var containerPoint = map.layerPointToContainerPoint(layerPoint);
+                var latlng = map.layerPointToLatLng(layerPoint);
+                map.fireEvent('touchstart',
+                    {
+                        originalEvent: e,
+                        layerPoint: layerPoint,
+                        containerPoint: containerPoint,
+                        latlng: latlng
+                    });
+            });
+
+            document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchmove', function(e) {
+                e.preventDefault();
+
+                var touch = e.touches[0];
+                var layerPoint = L.point(touch.clientX, touch.clientY);
+                var containerPoint = map.layerPointToContainerPoint(layerPoint);
+                var latlng = map.layerPointToLatLng(layerPoint);
+                map.fireEvent('touchmove',
+                    {
+                        originalEvent: e,
+                        layerPoint: layerPoint,
+                        containerPoint: containerPoint,
+                        latlng: latlng
+                    });
+            });
+
+            document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchend', function(e) {
+                e.preventDefault();
+
+                var layerPoint = L.point(0, 0);
+                var containerPoint = map.layerPointToContainerPoint(layerPoint);
+                var latlng = map.layerPointToLatLng(layerPoint);
+                map.fireEvent('touchend',
+                    {
+                        originalEvent: e,
+                        layerPoint: layerPoint,
+                        containerPoint: containerPoint,
+                        latlng: latlng
+                    });
+            });
+
             // Attach all of the events.
             this.map.on(this.options.events[0] || 'mousedown touchstart', this.bindEvents().mouseDown);
             this.map.on(this.options.events[1] || 'mousemove touchmove', this.bindEvents().mouseMove);
@@ -1341,6 +1388,7 @@
                  */
                 mouseDown: function onMouseDown(event) {
 
+
                     if (this.creating) {
                         return;
                     }
@@ -1352,6 +1400,7 @@
                      * @type {Number}
                      */
                     var RIGHT_CLICK = 2;
+
 
                     if (event.originalEvent.button === RIGHT_CLICK) {
                         return;
@@ -1387,6 +1436,7 @@
 
                     var originalEvent = event.originalEvent;
 
+
                     if (this.movingEdge) {
 
                         // User is in fact modifying the shape of the polygon.
@@ -1403,7 +1453,11 @@
 
                     }
 
-                    this._createMouseMove(originalEvent);
+                    if(originalEvent.type === "touchmove") {
+                        this._createTouchMove(event);
+                    } else {
+                        this._createMouseMove(originalEvent);
+                    }
 
                 }.bind(this),
 
@@ -1507,6 +1561,33 @@
             // Resolve the pixel point to the latitudinal and longitudinal equivalent.
             var point  = this.map.mouseEventToContainerPoint(event),
                 latLng = this.map.containerPointToLatLng(point);
+
+            // Line data that is fed into the D3 line function we defined earlier.
+            var lineData = [this.fromPoint, new L.Point(point.x, point.y)];
+
+            // Draw SVG line based on the last movement of the mouse's position.
+            this.svg.append('path').classed('drawing-line', true).attr('d', this.lineFunction(lineData))
+                    .attr('stroke', '#D7217E').attr('stroke-width', 2).attr('fill', 'none');
+
+            // Take the pointer's position from the event for the next invocation of the mouse move event,
+            // and store the resolved latitudinal and longitudinal values.
+            this.fromPoint.x = point.x;
+            this.fromPoint.y = point.y;
+            this.latLngs.push(latLng);
+
+        },
+
+        /**
+         * @method _createMouseMove
+         * @param event {Object}
+         * @return {void}
+         * @private
+         */
+        _createTouchMove: function _createTouchMove(event) {
+
+            // Resolve the pixel point to the latitudinal and longitudinal equivalent.
+            var point  = event.containerPoint,
+                latLng = event.latlng;
 
             // Line data that is fed into the D3 line function we defined earlier.
             var lineData = [this.fromPoint, new L.Point(point.x, point.y)];
