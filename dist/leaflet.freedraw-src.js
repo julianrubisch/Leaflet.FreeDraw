@@ -328,53 +328,73 @@
             // Create a new instance of the D3 free-hand tracer.
             this.createD3();
 
-            $window.document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchstart', function(e) {
-                e.preventDefault();
+            var mapPane = $window.document.getElementsByClassName("leaflet-map-pane")[0];
+            mapPane.mode = this.mode;
 
-                var touch = e.touches[0];
-                var boundingRect = this.getBoundingClientRect();
-                var layerPoint = L.point(touch.clientX-boundingRect.left, touch.clientY-boundingRect.top);
-                var containerPoint = map.layerPointToContainerPoint(layerPoint);
-                var latlng = map.layerPointToLatLng(layerPoint);
-                map.fireEvent('touchstart',
-                    {
-                        originalEvent: e,
-                        layerPoint: layerPoint,
-                        containerPoint: containerPoint,
-                        latlng: latlng
-                    });
+            $window.document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchstart', function(e) {
+
+                if(mapPane.mode > 1) {
+                    e.preventDefault();
+
+                    var touch = e.touches[0];
+                    var boundingRect = this.getBoundingClientRect();
+                    var layerPoint = L.point(touch.clientX-boundingRect.left, touch.clientY-boundingRect.top);
+                    var containerPoint = map.layerPointToContainerPoint(layerPoint);
+                    var latlng = map.layerPointToLatLng(layerPoint);
+                    map.fireEvent('touchstart',
+                        {
+                            originalEvent: e,
+                            layerPoint: layerPoint,
+                            containerPoint: containerPoint,
+                            latlng: latlng
+                        });
+
+                } else {
+                    return true;
+                }
             });
 
             $window.document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchmove', function(e) {
-                e.preventDefault();
 
-                var touch = e.touches[0];
-                var boundingRect = this.getBoundingClientRect();
-                var layerPoint = L.point(touch.clientX-boundingRect.left, touch.clientY-boundingRect.top);
-                var containerPoint = map.layerPointToContainerPoint(layerPoint);
-                var latlng = map.layerPointToLatLng(layerPoint);
-                map.fireEvent('touchmove',
-                    {
-                        originalEvent: e,
-                        layerPoint: layerPoint,
-                        containerPoint: containerPoint,
-                        latlng: latlng
-                    });
+                if(mapPane.mode > 1) {
+
+                    e.preventDefault();
+
+                    var touch = e.touches[0];
+                    var boundingRect = this.getBoundingClientRect();
+                    var layerPoint = L.point(touch.clientX-boundingRect.left, touch.clientY-boundingRect.top);
+                    var containerPoint = map.layerPointToContainerPoint(layerPoint);
+                    var latlng = map.layerPointToLatLng(layerPoint);
+                    map.fireEvent('touchmove',
+                        {
+                            originalEvent: e,
+                            layerPoint: layerPoint,
+                            containerPoint: containerPoint,
+                            latlng: latlng
+                        });
+                } else {
+                    return true;
+                }
             });
 
             $window.document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchend', function(e) {
-                e.preventDefault();
 
-                var layerPoint = L.point(0, 0);
-                var containerPoint = map.layerPointToContainerPoint(layerPoint);
-                var latlng = map.layerPointToLatLng(layerPoint);
-                map.fireEvent('touchend',
-                    {
-                        originalEvent: e,
-                        layerPoint: layerPoint,
-                        containerPoint: containerPoint,
-                        latlng: latlng
-                    });
+                if(mapPane.mode > 1) {
+                    e.preventDefault();
+
+                    var layerPoint = L.point(0, 0);
+                    var containerPoint = map.layerPointToContainerPoint(layerPoint);
+                    var latlng = map.layerPointToLatLng(layerPoint);
+                    map.fireEvent('touchend',
+                        {
+                            originalEvent: e,
+                            layerPoint: layerPoint,
+                            containerPoint: containerPoint,
+                            latlng: latlng
+                        });
+                } else {
+                    return true;
+                }
             });
 
             // Attach all of the events.
@@ -494,6 +514,11 @@
 
             // Set the current mode and emit the event.
             this.mode = mode;
+
+            var mapPane = $window.document.getElementsByClassName("leaflet-map-pane")[0];
+            mapPane.mode = this.mode;
+            console.log(mapPane.mode);
+
             this.fire('mode', {
                 mode: mode
             });
