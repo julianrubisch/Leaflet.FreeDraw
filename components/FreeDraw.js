@@ -2,6 +2,8 @@
 
     "use strict";
 
+
+
     /**
      * @method freeDraw
      * @param options {Object}
@@ -326,7 +328,7 @@
             // Create a new instance of the D3 free-hand tracer.
             this.createD3();
 
-            document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchstart', function(e) {
+            $window.document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchstart', function(e) {
                 e.preventDefault();
 
                 var touch = e.touches[0];
@@ -343,7 +345,7 @@
                     });
             });
 
-            document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchmove', function(e) {
+            $window.document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchmove', function(e) {
                 e.preventDefault();
 
                 var touch = e.touches[0];
@@ -360,7 +362,7 @@
                     });
             });
 
-            document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchend', function(e) {
+            $window.document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchend', function(e) {
                 e.preventDefault();
 
                 var layerPoint = L.point(0, 0);
