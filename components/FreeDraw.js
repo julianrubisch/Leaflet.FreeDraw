@@ -333,7 +333,7 @@
 
             $window.document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchstart', function(e) {
 
-                if(mapPane.mode > 1) {
+                if(mapPane.mode === L.FreeDraw.MODES.CREATE || mapPane.mode === (L.FreeDraw.MODES.CREATE | L.FreeDraw.MODES.EDIT)) {
                     e.preventDefault();
 
                     var touch = e.touches[0];
@@ -356,7 +356,7 @@
 
             $window.document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchmove', function(e) {
 
-                if(mapPane.mode > 1) {
+                if(mapPane.mode === L.FreeDraw.MODES.CREATE || mapPane.mode === (L.FreeDraw.MODES.CREATE | L.FreeDraw.MODES.EDIT)) {
 
                     e.preventDefault();
 
@@ -379,7 +379,7 @@
 
             $window.document.getElementsByClassName("leaflet-map-pane")[0].addEventListener('touchend', function(e) {
 
-                if(mapPane.mode > 1) {
+                if(mapPane.mode === L.FreeDraw.MODES.CREATE || mapPane.mode === (L.FreeDraw.MODES.CREATE | L.FreeDraw.MODES.EDIT)) {
                     e.preventDefault();
 
                     var layerPoint = L.point(0, 0);
@@ -392,7 +392,17 @@
                             containerPoint: containerPoint,
                             latlng: latlng
                         });
+
+                    map.fireEvent('click',
+                        {
+                            originalEvent: e,
+                            layerPoint: layerPoint,
+                            containerPoint: containerPoint,
+                            latlng: latlng
+                        });
+
                 } else {
+
                     return true;
                 }
             });
@@ -517,7 +527,6 @@
 
             var mapPane = $window.document.getElementsByClassName("leaflet-map-pane")[0];
             mapPane.mode = this.mode;
-            console.log(mapPane.mode);
 
             this.fire('mode', {
                 mode: mode
@@ -862,10 +871,13 @@
                 className: Array.isArray(className) ? className[this.polygons.length] : className
             });
 
+
             // Handle the click event on a polygon.
             polygon.on('click', function onClick(event) {
                 this.handlePolygonClick(polygon, event);
             }.bind(this));
+
+
 
             // Add the polyline to the map, and then find the edges of the polygon.
             polygon.addTo(this.map);
@@ -1596,7 +1608,7 @@
 
             // Draw SVG line based on the last movement of the mouse's position.
             this.svg.append('path').classed('drawing-line', true).attr('d', this.lineFunction(lineData))
-                    .attr('stroke', '#D7217E').attr('stroke-width', 2).attr('fill', 'none');
+                    .attr('stroke', '#22aa22').attr('stroke-width', 4).attr('fill', 'none');
 
             // Take the pointer's position from the event for the next invocation of the mouse move event,
             // and store the resolved latitudinal and longitudinal values.
@@ -1623,7 +1635,7 @@
 
             // Draw SVG line based on the last movement of the mouse's position.
             this.svg.append('path').classed('drawing-line', true).attr('d', this.lineFunction(lineData))
-                    .attr('stroke', '#D7217E').attr('stroke-width', 2).attr('fill', 'none');
+                    .attr('stroke', '#22aa22').attr('stroke-width', 4).attr('fill', 'none');
 
             // Take the pointer's position from the event for the next invocation of the mouse move event,
             // and store the resolved latitudinal and longitudinal values.
